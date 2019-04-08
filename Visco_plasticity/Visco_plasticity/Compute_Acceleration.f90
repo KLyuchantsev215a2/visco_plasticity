@@ -14,7 +14,7 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     real*8 :: Ci(2,2,N)
     real*8 :: Ci_new(3,3,N)
     real*8 :: Couchy(2,2,N)
-    real*8 :: PK1(3,3,N)
+    real*8 :: PK1(2,2,N)
     real*8 :: x(2,N)
     real*8 :: x_old(2,N)
     real*8 :: v_old(2,N)

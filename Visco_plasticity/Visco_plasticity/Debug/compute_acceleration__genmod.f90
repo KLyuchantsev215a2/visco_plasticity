@@ -1,4 +1,4 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Sun Apr 07 16:12:15 2019
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Apr 08 15:55:36 2019
         MODULE COMPUTE_ACCELERATION__genmod
           INTERFACE 
             SUBROUTINE COMPUTE_ACCELERATION(N,H,DH,RHO_0,MU,K,ETA,      &
@@ -18,7 +18,7 @@
               REAL(KIND=8) :: VOL(N)
               REAL(KIND=8) :: F(2,2,N)
               REAL(KIND=8) :: COUCHY(2,2,N)
-              REAL(KIND=8) :: PK1(3,3,N)
+              REAL(KIND=8) :: PK1(2,2,N)
               REAL(KIND=8) :: X(2,N)
               REAL(KIND=8) :: X_OLD(2,N)
               REAL(KIND=8) :: V_OLD(2,N)

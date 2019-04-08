@@ -10,7 +10,7 @@
     
     real*8, allocatable :: x(:,:)
   
-  !  real*8, allocatable :: xplot(:,:,:)
+    real*8, allocatable :: xplot(:,:,:)
     real*8, allocatable :: x_init(:,:)
     real*8, allocatable :: table(:,:)
     real*8, allocatable :: v(:,:)
@@ -62,7 +62,7 @@
       
      end interface
     
-    open (unit=1, file="input41.txt", status='old',    &
+    open (unit=1, file="input21.txt", status='old',    &
              access='sequential', form='formatted', action='read' )
     open (unit=2, file="output_x.txt", action='write')
     open (unit=3, file="output_C.txt", action='write')
@@ -78,7 +78,7 @@
     
     k=2.0*mu*(1.0+nu)/(3.0*(1.0-2.0*nu))
     damping=0!0.003
-    eta=1.0/25.0
+    eta=1.0
     friction=1.0/25.0
     E=9.0*k*mu/(3.0*k+mu)
 
@@ -89,6 +89,7 @@
     allocate(vol(N))
     allocate(x(2,N))
     allocate(x_init(2,N))
+    allocate(xplot(2,N,int(T/dt)))
     allocate(v(2,N))
     allocate(table(N,30))
     
@@ -107,7 +108,7 @@
     allocate(Ci(2,2,N))
     allocate(Ci_new(3,3,N))
     allocate(Couchy(2,2,N))
-    allocate(PK1(3,3,N))
+    allocate(PK1(2,2,N))
    
     vol=m/rho_0
         
@@ -148,10 +149,10 @@
         
         time_calculated=(real(step)*dt)
         
-        !xplot(1:2,1:N,step)=x
+        xplot(1:2,1:N,step)=x
     
-        write (2,1111) x(1,1681)-x_init(1,1681),x(2,1681)-x_init(2,1681),time_calculated
-        write (3,1112) Couchy(1,2,841),Couchy(1,1,841),Couchy(2,2,841),time_calculated
+        write (2,1111) x(1,441)-x_init(1,441),x(2,441)-x_init(2,441),time_calculated
+        write (3,1112) Couchy(1,2,221),Couchy(1,1,221),Couchy(2,2,221),time_calculated
      
     enddo
     
@@ -159,7 +160,7 @@
     
     pause
     
-  !  call  plot(xplot,N,int(T/dt))
+    call  plot(xplot,N,int(T/dt))
     
     
     deallocate(vol)
@@ -219,6 +220,7 @@
         
     function trace (M)
             real*8 :: M(3,3)
+            real*8 :: trace
             trace=M(1,1)+M(2,2)+M(3,3)
     end function trace
     
