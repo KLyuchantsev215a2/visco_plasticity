@@ -78,8 +78,8 @@
     
     k=2.0*mu*(1.0+nu)/(3.0*(1.0-2.0*nu))
     damping=0!0.003
-    eta=1.0
-    friction=1.0/25.0
+    eta=1.0/25.0
+    friction=2.0
     E=9.0*k*mu/(3.0*k+mu)
 
     cs_0=sqrt((E+4.0/3.0*mu)/rho_0)
@@ -166,15 +166,26 @@
     deallocate(vol)
     deallocate(x)
     deallocate(x_init)
+    deallocate(xplot)
     deallocate(v)
+    deallocate(table)
     
     deallocate(acc)
     deallocate(x_0,x_n_1,x_n_2,x_n_1_2,x_n_3_2)
     deallocate(v_0_0,v_n_1,v_n_2,v_n_1_2,v_n_3_2)
     deallocate(W)
-    deallocate(nabla_W)
+    
+    deallocate(Wper1)
+    deallocate(Wper2)
+    deallocate(Wper3)
+    deallocate(Wper4)
     deallocate(nabla_W_0)
-    deallocate(table)
+    
+    deallocate(F)
+    deallocate(Ci)
+    deallocate(Ci_new)
+    deallocate(Couchy)
+    deallocate(PK1)
     
      1100 format (7f10.6,1i4)
     1113 format ("Density "1f10.6,/,"Time "1f10.6,/,"Poisson's ratio " 1f10.6,/,"Shear modulus " 1f10.6,/,"Side of a square " 1f10.6,/,"For finite difference " 1f10.6,/,"CFL " 1f10.6,/,"Particle count " 1i4)
