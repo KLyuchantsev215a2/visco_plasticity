@@ -10,11 +10,11 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     real*8 :: damping
     real*8 :: friction
     real*8 :: vol(N)
-    real*8 :: F(2,2,N)
-    real*8 :: Ci(2,2,N)
+    real*8 :: F(3,3,N)
+    real*8 :: Ci(3,3,N)
     real*8 :: Ci_new(3,3,N)
-    real*8 :: Couchy(2,2,N)
-    real*8 :: PK1(2,2,N)
+    real*8 :: Couchy(3,3,N)
+    real*8 :: PK1(3,3,N)
     real*8 :: x(2,N)
     real*8 :: x_old(2,N)
     real*8 :: v_old(2,N)
@@ -28,7 +28,7 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     real*8 :: acc(2,N)
     integer :: index_section(count_section)
     integer :: index_hole(count_hole)
-    real*8 :: table(N,30)
+    real*8 :: table(N,60)
 
    ! call compute_W_cor(x,x,h,N,vol,W)
     !call Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W,dh)
@@ -55,13 +55,11 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     enddo
     
  
-  !  do k1=1,count_section
-  !      acc(2,index_section(k1))=0
-  !  enddo
+    do k1=1,count_section
+        acc(2,index_section(k1))=0
+    enddo
     
-   ! do k2=1,count_hole
-  !      acc(2,index_hole(k2))=acc(2,index_hole(k2))+0.1
-   ! enddo
+  
 
     
     return

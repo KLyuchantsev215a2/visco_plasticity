@@ -1,23 +1,24 @@
-subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,friction)
+subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
     !input F,Ci
     !output Ci_new,PK1
     integer:: N
-    real*8 :: F(2,2,N)
-    real*8 :: Couchy(2,2,N)
-    real*8 :: Ci(2,2,N)
+    real*8 :: F(3,3,N)
+    real*8 :: Couchy(3,3,N)
+    real*8 :: Ci(3,3,N)
     real*8 :: Ci_new(3,3,N)
     real*8 :: mu
     real*8 :: dt
     real*8 :: li
     real*8 :: k
     real*8 :: eta
-    real*8 :: friction
-    real*8 :: Fbeautiful
-    real*8 :: Fbeautiful_tmp_mult(3,3)
-    real*8 :: Fbeautiful_tmp_dev(3,3)
-    real*8 :: Fbeautiful_tmp_sqr(3,3)
-    real*8 :: PK1(2,2,N)
-    real*8 :: PK1_trans_tmp(2,2)
+    real*8 :: YieldStress
+    real*8 :: DrivingForce
+    real*8 :: MandellStress(3,3)
+    real*8 :: DrivingForce_tmp_dev(3,3)
+    real*8 :: DrivingForce_tmp_sqr(3,3)
+    real*8 :: PK1(3,3,N)
+    real*8 :: PK13x3(3,3)
+    real*8 :: PK1_trans_tmp(3,3)
     
     real*8:: detFp
     real*8 ::Fp(3,3)
@@ -73,15 +74,15 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,friction)
         call mymulty(mu*invC,devmultCCi,Stress2PK)   ! Stress2PK = trial 2nd PK
         
         
-        call mymulty(C,Stress2PK,Fbeautiful_tmp_mult)  ! calligraphic F = driving force =  C T^tilde
+        call mymulty(C,Stress2PK,MandellStress)  ! calligraphic F = driving force =  C T^tilde
         
-        call dev(Fbeautiful_tmp_mult,Fbeautiful_tmp_dev)    ! Fbeautiful_tmp_dev = dev(C T^tilde)
+        call dev(MandellStress,DrivingForce_tmp_dev)    ! DrivingForce_tmp_dev = dev(C T^tilde)
         
-        call mymulty(Fbeautiful_tmp_dev,Fbeautiful_tmp_dev,Fbeautiful_tmp_sqr)   ! Fbeautiful_tmp_sqr = (dev(C T^tilde))^2
+        call mymulty(DrivingForce_tmp_dev,DrivingForce_tmp_dev,DrivingForce_tmp_sqr)   ! DrivingForce_tmp_sqr = (dev(C T^tilde))^2
         
-        Fbeautiful=sqrt((Fbeautiful_tmp_sqr(1,1)+Fbeautiful_tmp_sqr(2,2)+Fbeautiful_tmp_sqr(3,3)))                             ! Fbeautiful = sqrt(trace(  (  dev(C T^tilde)  )^2  ))
+        DrivingForce=sqrt((DrivingForce_tmp_sqr(1,1)+DrivingForce_tmp_sqr(2,2)+DrivingForce_tmp_sqr(3,3)))                             ! DrivingForce = sqrt(trace(  (  dev(C T^tilde)  )^2  ))
         
-        li=(Fbeautiful-sqrt(2.0d0/3.0d0)*friction)/eta
+        li=(DrivingForce-sqrt(2.0d0/3.0d0)*YieldStress)/eta
         
         if (li<0) then
             li=0
@@ -89,10 +90,10 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,friction)
 
         
         ! update Ci
-        if(Fbeautiful==0) then
+        if(DrivingForce==0) then
             Ci3x3 = Ci3x3
         else
-        Ci3x3 = Ci3x3 + dt*mu/Fbeautiful*2.0*li*C_iso
+        Ci3x3 = Ci3x3 + dt*mu/DrivingForce*2.0*li*C_iso
         end if
         
         detCi3x3=(Ci3x3(1,1)*Ci3x3(2,2)-Ci3x3(1,2)*Ci3x3(2,1))*Ci3x3(3,3)
@@ -120,7 +121,19 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,friction)
          ! now Couchy_tmp is Kirchhoff
         
         
-        call inv_matrix(Fp,invFp)
+         !call inv_matrix(Fp,invFp)
+        
+         !call mymulty(invFp,Couchy_tmp,PK1)
+        
+         !PK13x3(1:3,1:3)=PK1(1:3,1:3,i)   
+         
+         !call trans(PK13x3,PK1_trans_tmp)
+         
+         !PK1(1:3,1:3,i)=PK1_trans_tmp(1:3,1:3)! this way it works better :-)
+    
+         !Couchy(1:2,1:2,i)=Couchy_tmp(1:2,1:2)  
+        
+         call inv_matrix(Fp,invFp)
         
          do alpha=1,2
             do beta=1,2

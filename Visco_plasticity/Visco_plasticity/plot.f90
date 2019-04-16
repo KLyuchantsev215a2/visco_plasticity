@@ -16,7 +16,7 @@
         
         call gp%animation_start(1)
         
-        do i=1, frame, 600
+        do i=1, frame
             xg=x(1,1:N,i)
             yg=x(2,1:N,i)
             

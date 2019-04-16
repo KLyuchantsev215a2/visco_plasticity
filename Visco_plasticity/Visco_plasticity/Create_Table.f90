@@ -2,7 +2,7 @@ subroutine Create_Table(x,h,table,N)
     integer :: N,i,j
     real*8 :: x(2,N)
     real*8:: h
-    real*8 :: table(N,30)
+    real*8 :: table(N,60)
     
     real*8::r(2)
     real*8::xi(2)

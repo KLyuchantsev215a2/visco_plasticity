@@ -14,7 +14,7 @@ subroutine Compute_W_cor(x,xper,h,N,vol,W,table)
         real*8 ::cormat(2,2)
         real*8 ::cormat_tmp(2,2)
         real*8 ::alpha,detcormat_tmp
-        real*8 :: table(N,30)
+        real*8 :: table(N,60)
         
         do i=1,N
             sumW=0
