@@ -195,9 +195,9 @@
         
         write (2,1111) x(1,441)-x_init(1,441),x(2,441)-x_init(2,441),time_calculated
         
-        if((time_calculated>=0.660104)*(flag==0)) then
+        if((time_calculated>=0.99)*(flag==0)) then
         flag=1
-            do k2=1,count_hole
+            do k2=1,count_section
                 write (3,1112) Couchy(2,2,index_section(k2)),x(1,index_section(k2))
             enddo
         end if
@@ -235,7 +235,7 @@
     deallocate(PK1)
     
      1100 format (7f10.6,1i4)
-    1113 format ("Density "1f10.6,/,"Time "1f10.6,/,"Poisson's ratio " 1f10.6,/,"Shear modulus " 1f10.6,/,"Side of a square " 1f10.6,/,"For finite difference " 1f10.6,/,"CFL " 1f10.6,/,"Particle count " 1i4)
+    1113 format ("Density "1f12.6,/,"Time "1f10.6,/,"Poisson's ratio " 1f10.6,/,"Shear modulus " 1f15.6,/,"Side of a square " 1f10.6,/,"For finite difference " 1f10.6,/,"CFL " 1f10.6,/,"Particle count " 1i4)
     1110 format (1i12,1f25.0,1f20.0)
     1111 format (3f10.6)
 1112     format (3f13.6)
