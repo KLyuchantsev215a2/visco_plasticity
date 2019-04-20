@@ -1,10 +1,10 @@
 subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
-    !input F,Ci
+    !input F,Ci              
     !output Ci_new,PK1
     integer:: N
-    real*8 :: F(3,3,N)
-    real*8 :: Couchy(3,3,N)
-    real*8 :: Ci(3,3,N)
+    real*8 :: F(2,2,N)
+    real*8 :: Couchy(2,2,N)
+    real*8 :: Ci(2,2,N)
     real*8 :: Ci_new(3,3,N)
     real*8 :: mu
     real*8 :: dt
@@ -16,9 +16,9 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
     real*8 :: MandellStress(3,3)
     real*8 :: DrivingForce_tmp_dev(3,3)
     real*8 :: DrivingForce_tmp_sqr(3,3)
-    real*8 :: PK1(3,3,N)
+    real*8 :: PK1(2,2,N)
     real*8 :: PK13x3(3,3)
-    real*8 :: PK1_trans_tmp(3,3)
+    real*8 :: PK1_trans_tmp(2,2)
     
     real*8:: detFp
     real*8 ::Fp(3,3)
@@ -93,7 +93,7 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
         if(DrivingForce==0) then
             Ci3x3 = Ci3x3
         else
-        Ci3x3 = Ci3x3 + dt*mu/DrivingForce*2.0*li*C_iso
+        Ci3x3 = Ci3x3 + ((2.0*dt*mu*li)/DrivingForce)*C_iso
         end if
         
         detCi3x3=(Ci3x3(1,1)*Ci3x3(2,2)-Ci3x3(1,2)*Ci3x3(2,1))*Ci3x3(3,3)
@@ -118,20 +118,6 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
         do alpha=1,3
             Couchy_tmp(alpha,alpha)=Couchy_tmp(alpha,alpha)+k/10.0*(detFp**5-detFp**(-5))
         enddo
-         ! now Couchy_tmp is Kirchhoff
-        
-        
-         !call inv_matrix(Fp,invFp)
-        
-         !call mymulty(invFp,Couchy_tmp,PK1)
-        
-         !PK13x3(1:3,1:3)=PK1(1:3,1:3,i)   
-         
-         !call trans(PK13x3,PK1_trans_tmp)
-         
-         !PK1(1:3,1:3,i)=PK1_trans_tmp(1:3,1:3)! this way it works better :-)
-    
-         !Couchy(1:2,1:2,i)=Couchy_tmp(1:2,1:2)  
         
          call inv_matrix(Fp,invFp)
         
@@ -146,10 +132,10 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
         
          PK1_trans_tmp(1:2,1:2)=PK1(1:2,1:2,i)   ! this way it works better :-)
          
-         do alpha=1,2
+      do alpha=1,2
           do beta=1,2
                PK1(alpha,beta,i)=PK1_trans_tmp(beta,alpha)
-            enddo
+         enddo
         enddo
     
         Couchy(1:2,1:2,i)=Couchy_tmp(1:2,1:2)  

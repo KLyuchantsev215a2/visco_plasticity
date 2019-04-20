@@ -10,11 +10,11 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     real*8 :: damping
     real*8 :: friction
     real*8 :: vol(N)
-    real*8 :: F(3,3,N)
-    real*8 :: Ci(3,3,N)
+    real*8 :: F(2,2,N)
+    real*8 :: Ci(2,2,N)
     real*8 :: Ci_new(3,3,N)
-    real*8 :: Couchy(3,3,N)
-    real*8 :: PK1(3,3,N)
+    real*8 :: Couchy(2,2,N)
+    real*8 :: PK1(2,2,N)
     real*8 :: x(2,N)
     real*8 :: x_old(2,N)
     real*8 :: v_old(2,N)
@@ -34,7 +34,7 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     !call Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W,dh)
     call Compute_F(vol,x,x_old,nabla_W_0,N,F,table)
     call  OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,friction)
-    !Ci(1:2,1:2,1:N)=Ci_new(1:2,1:2,1:N)
+    Ci(1:2,1:2,1:N)=Ci_new(1:2,1:2,1:N)
   !  call Compute_Stress_PK1(F,Couchy,PK1,mu,k,N)
 
     acc=0
@@ -45,19 +45,17 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
                 do alpha=1,2
                     acc(alpha,i)=acc(alpha,i)-(vol(table(i,j+1)))*PK1(alpha,beta,table(i,j+1))*nabla_W_0(beta,table(i,j+1),i)
                 enddo
-                acc(beta,i)=acc(beta,i)-damping*v_old(beta,i)
             enddo
         enddo
 
         do alpha=1,2
+            acc(alpha,i)=acc(alpha,i)-damping*v_old(alpha,i)
             acc(alpha,i)=acc(alpha,i)/rho_0
         enddo
     enddo
     
  
-    do k1=1,count_section
-        acc(2,index_section(k1))=0
-    enddo
+  
     
   
 

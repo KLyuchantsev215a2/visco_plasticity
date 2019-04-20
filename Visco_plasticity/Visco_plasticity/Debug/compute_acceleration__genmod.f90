@@ -1,4 +1,4 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Sun Apr 14 11:20:57 2019
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Apr 20 13:19:07 2019
         MODULE COMPUTE_ACCELERATION__genmod
           INTERFACE 
             SUBROUTINE COMPUTE_ACCELERATION(N,H,DH,RHO_0,MU,K,ETA,      &
@@ -16,9 +16,9 @@
               REAL(KIND=8) :: ETA
               REAL(KIND=8) :: DAMPING
               REAL(KIND=8) :: VOL(N)
-              REAL(KIND=8) :: F(3,3,N)
-              REAL(KIND=8) :: COUCHY(3,3,N)
-              REAL(KIND=8) :: PK1(3,3,N)
+              REAL(KIND=8) :: F(2,2,N)
+              REAL(KIND=8) :: COUCHY(2,2,N)
+              REAL(KIND=8) :: PK1(2,2,N)
               REAL(KIND=8) :: X(2,N)
               REAL(KIND=8) :: X_OLD(2,N)
               REAL(KIND=8) :: V_OLD(2,N)
@@ -32,7 +32,7 @@
               REAL(KIND=8) :: ACC(2,N)
               INTEGER(KIND=4) :: INDEX_SECTION(COUNT_SECTION)
               INTEGER(KIND=4) :: INDEX_HOLE(COUNT_HOLE)
-              REAL(KIND=8) :: CI(3,3,N)
+              REAL(KIND=8) :: CI(2,2,N)
               REAL(KIND=8) :: CI_NEW(3,3,N)
               REAL(KIND=8) :: TABLE(N,60)
               REAL(KIND=8) :: FRICTION
