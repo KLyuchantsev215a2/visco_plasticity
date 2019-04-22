@@ -79,7 +79,7 @@
     m=rho_0*S/N
     
     k=136000.0
-    damping=100
+    damping=300
     eta=0.1
     YieldStress=335.0
     E=9.0*k*mu/(3.0*k+mu)
@@ -162,7 +162,7 @@
         
     enddo
     x_init=x
-    call plot_init(x,N,count_hole,count_section,index_section,index_hole)
+   ! call plot_init(x,N,count_hole,count_section,index_section,index_hole)
    
    
    call Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W_0,dh,table)!tmp
@@ -187,11 +187,11 @@
      !   enddo
         
        do k1=1,400,20
-          x(1:2,k1)=x_init(1:2,k1);
+          x(1,k1)=x_init(1,k1);
       enddo
       
       do k1=20,400,20
-          x(1:2,k1)=x_init(1:2,k1)+0.02*0.5*(1-cos(pi*time_calculated))
+          x(1,k1)=x_init(1,k1)+0.02*0.5*(1-cos(pi*time_calculated))
       enddo
         
         time_calculated=(real(step)*dt)
@@ -223,7 +223,7 @@
     
     pause
     
-    call  plot(xplot,N,50)
+    !call  plot(xplot,N,50)
     
     
     deallocate(vol)
