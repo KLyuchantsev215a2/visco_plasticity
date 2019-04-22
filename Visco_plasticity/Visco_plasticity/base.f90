@@ -129,38 +129,38 @@
    count_hole=0
    count_section=0
     
-   ! do i=1,N
+    do i=1,N
          
 
-    ! if((x(1,i)<0.1)*(x(2,i)>0.5)) then
-     !           count_hole=count_hole+1
-     !   end if
+     if((x(1,i)<0.1)*(x(2,i)>0.5)) then
+                count_hole=count_hole+1
+        end if
         
-     !   if ( (x(1,i)>0.7)*(x(2,i)<=0.001))     then
-       !         count_section=count_section+1
-      !  end if
+        if ( (x(1,i)>0.7)*(x(2,i)<=0.001))     then
+                count_section=count_section+1
+        end if
         
-    !enddo
+    enddo
     
-    !allocate(index_hole(count_hole))
-   ! allocate(index_section(count_section))
+    allocate(index_hole(count_hole))
+    allocate(index_section(count_section))
      
-   ! k1=1
-   ! k2=1
-   ! do i=1,N
+    k1=1
+    k2=1
+    do i=1,N
         
-    !    if((x(1,i)<0.1)*(x(2,i)>0.5))then     
-    !            index_hole(k1)=i
-    !            k1=k1+1
-    !    end if
+        if((x(1,i)<0.1)*(x(2,i)>0.5))then     
+                index_hole(k1)=i
+                k1=k1+1
+        end if
         
         
-   !     if ( (x(1,i)>0.7)*(x(2,i)<=0.001))     then
-   !             index_section(k2)=i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-  !              k2=k2+1
-   !     end if
+        if ( (x(1,i)>0.7)*(x(2,i)<=0.001))     then
+                index_section(k2)=i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+              k2=k2+1
+        end if
         
-  !  enddo
+    enddo
     x_init=x
     call plot_init(x,N,count_hole,count_section,index_section,index_hole)
    
@@ -179,19 +179,19 @@
         x=x+dt*v
         
        ! do k2=1,count_hole
-       !     x(2,index_hole(k2))=x_init(2,index_hole(k2))+0.02*time_calculated*time_calculated
-       ! enddo  
+      !      x(2,index_hole(k2))=x_init(2,index_hole(k2))+0.008712*0.5*(1-cos(pi*time_calculated/T))
+      !  enddo  
         
-       ! do k1=1,count_section
-       !     x(2,index_section(k1))=x_init(2,index_section(k1))
-        !enddo
+     !   do k1=1,count_section
+     !       x(2,index_section(k1))=x_init(2,index_section(k1))
+     !   enddo
         
        do k1=1,400,20
           x(1:2,k1)=x_init(1:2,k1);
       enddo
       
       do k1=20,400,20
-          x(1:2,k1)=x_init(1:2,k1)+0.02*0.5*(1-cos(pi*time_calculated));
+          x(1:2,k1)=x_init(1:2,k1)+0.02*0.5*(1-cos(pi*time_calculated))
       enddo
         
         time_calculated=(real(step)*dt)
@@ -211,12 +211,12 @@
         
 !        write (2,1111) x(1,index_hole(2))-x_init(1,index_hole(2)),x(2,index_hole(2))-x_init(2,index_hole(2)),time_calculated
         
-        !if((time_calculated>=0.66)*(flag==0)) then
-       ! flag=1
-         !   do k2=1,count_section
-                write (3,1112) Couchy(1,1,210),x(1,210)-x_init(1,210)
-         !   enddo
-       ! end if
+  !  if((time_calculated>=0.99)*(flag==0)) then
+      !  flag=1
+       !     do k1=1,count_section
+                write (3,1112) Couchy(1,1,210),x(1,210)-x_init(1,210)!x(1,index_section(k1))
+      !      enddo
+    !    end if
     enddo
     
   

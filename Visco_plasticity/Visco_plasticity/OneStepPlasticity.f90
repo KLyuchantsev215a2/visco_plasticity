@@ -87,8 +87,6 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
         if (li<0) then
             li=0
         end if                     ! Maccauley bracket
-
-        
         ! update Ci
         if(DrivingForce==0) then
             Ci3x3 = Ci3x3
