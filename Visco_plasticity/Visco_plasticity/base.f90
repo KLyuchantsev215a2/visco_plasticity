@@ -62,7 +62,7 @@
       
      end interface
     
-    open (unit=1, file="input400.txt")
+    open (unit=1, file="input400_Circle.txt")
     open (unit=2, file="output_x.txt", action='write')
     open (unit=3, file="output_C.txt", action='write')
     
@@ -79,13 +79,13 @@
     m=rho_0*S/N
     
     k=136000.0
-    damping=300
-    eta=0.1
-    YieldStress=335.0
+    damping=300.0
+    eta=1.0
+    YieldStress=335.0d0
     E=9.0*k*mu/(3.0*k+mu)
 
     cs_0=sqrt((k+4.0/3.0*mu)/rho_0)
-    h=1.4*sqrt(m/rho_0)
+    h=1.0*sqrt(m/rho_0)
     dt=0.00001!CFL*h/(cs_0)
     fr=int(T/dt/50)
 
@@ -114,7 +114,7 @@
     allocate(PK1(2,2,N))
    
     vol=m/rho_0
-        
+       
     do i=1,N
         read (1, 1110) a,x(1,i),x(2,i)
     enddo
@@ -132,11 +132,11 @@
     do i=1,N
          
 
-     if((x(1,i)<0.1)*(x(2,i)>0.5)) then
-                count_hole=count_hole+1
+    if((x(1,i)<0.1)*(x(2,i)>0.5)) then
+            count_hole=count_hole+1
         end if
         
-        if ( (x(1,i)>0.7)*(x(2,i)<=0.001))     then
+        if ( (x(1,i)>0.7)*(x(2,i)<=0))     then
                 count_section=count_section+1
         end if
         
@@ -149,20 +149,20 @@
     k2=1
     do i=1,N
         
-        if((x(1,i)<0.1)*(x(2,i)>0.5))then     
+    if((x(1,i)<0.1)*(x(2,i)>0.5))then     
                 index_hole(k1)=i
                 k1=k1+1
         end if
         
         
-        if ( (x(1,i)>0.7)*(x(2,i)<=0.001))     then
+        if ( (x(1,i)>0.7)*(x(2,i)<=0))     then
                 index_section(k2)=i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-              k2=k2+1
+                k2=k2+1
         end if
         
     enddo
     x_init=x
-   ! call plot_init(x,N,count_hole,count_section,index_section,index_hole)
+    call plot_init(x,N,count_hole,count_section,index_section,index_hole)
    
    
    call Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W_0,dh,table)!tmp
@@ -178,23 +178,26 @@
         v=v+dt*acc
         x=x+dt*v
         
-       ! do k2=1,count_hole
-      !      x(2,index_hole(k2))=x_init(2,index_hole(k2))+0.008712*0.5*(1-cos(pi*time_calculated/T))
-      !  enddo  
-        
-     !   do k1=1,count_section
-     !       x(2,index_section(k1))=x_init(2,index_section(k1))
-     !   enddo
-        
-       do k1=1,400,20
-          x(1,k1)=x_init(1,k1);
-      enddo
-      
-      do k1=20,400,20
-          x(1,k1)=x_init(1,k1)+0.02*0.5*(1-cos(pi*time_calculated))
-      enddo
-        
         time_calculated=(real(step)*dt)
+        
+        do k2=1,count_hole
+            x(2,index_hole(k2))=x_init(2,index_hole(k2))+0.02*0.5*(1-cos(pi*time_calculated))
+        enddo  
+        
+        do k1=1,count_section
+            x(2,index_section(k1))=x_init(2,index_section(k1))
+        enddo
+        
+       !do k1=1,400,20
+      !    x(1,k1)=x_init(1,k1);
+    !  enddo
+      
+     ! do k1=20,400,20
+     !     x(1,k1)=x_init(1,k1)+0.02*0.5*(1-cos(pi*time_calculated))
+     !     x(1,k1-1)=x_init(1,k1-1)+0.02*0.5*(1-cos(pi*time_calculated))
+     ! enddo
+        
+        
     
        
         call Compute_F(vol,x,x_init,nabla_W_0,N,F,table) 
@@ -203,27 +206,28 @@
         
              
         
-        
+       
+       
         if(step-int(step/fr)*fr==0) then
+             write (*,1112) Couchy(1,1,index_section(1)),x(1,index_section(1))
             xplot(1:2,1:N,coutfr)=x
             coutfr=coutfr+1
         end if
         
-!        write (2,1111) x(1,index_hole(2))-x_init(1,index_hole(2)),x(2,index_hole(2))-x_init(2,index_hole(2)),time_calculated
-        
-  !  if((time_calculated>=0.99)*(flag==0)) then
-      !  flag=1
-       !     do k1=1,count_section
-                write (3,1112) Couchy(1,1,210),x(1,210)-x_init(1,210)!x(1,index_section(k1))
-      !      enddo
-    !    end if
+    if((time_calculated>=0.66)*(flag==0)) then
+        flag=1
+            do k1=1,count_section
+                write (3,1112) Couchy(1,1,index_section(k1)),x(1,index_section(k1))
+                write (2,1112) Couchy(2,2,index_section(k1)),x(1,index_section(k1))
+            enddo
+        end if
     enddo
     
   
     
     pause
     
-    !call  plot(xplot,N,50)
+    call  plot(xplot,N,50)
     
     
     deallocate(vol)
@@ -250,11 +254,16 @@
     deallocate(Couchy)
     deallocate(PK1)
     
-     1100 format (7f10.6,1i4)
-    1113 format ("Density "1f12.6,/,"Time "1f10.6,/,"Poisson's ratio " 1f10.6,/,"Shear modulus " 1f15.6,/,"Side of a square " 1f10.6,/,"For finite difference " 1f10.6,/,"CFL " 1f10.6,/,"Particle count " 1i4)
-    1110 format (1i12,1f25.0,1f20.0)
-    1111 format (3f10.6)
-1112     format (3f13.6)
+!1100 format (7f10.6,1i3)
+ !   1113 format ("Density "1f10.6,/,"Time "1f10.6,/,"Poisson's ratio " 1f10.6,/,"Shear modulus " 1f10.6,/,"Side of a square " 1f10.6,/,"For finite difference " 1f10.6,/,"CFL " 1f10.6,/,"Particle count " 1i3)
+    !1110 format (1f22.0,1f23.0)
+ !   1111 format (3f10.6)
+ !   1112 format (4f10.6)
+ 1100 format (7f10.6,1i4)
+ 1113 format ("Density "1f12.6,/,"Time "1f10.6,/,"Poisson's ratio " 1f10.6,/,"Shear modulus " 1f15.6,/,"Side of a square " 1f10.6,/,"For finite difference " 1f10.6,/,"CFL " 1f10.6,/,"Particle count " 1i4)
+ 1110 format (1i12,1f24.0,1f21.0)
+ 1111 format (3f10.6)
+ 1112 format (3f13.6)
     
     end program base
     

@@ -29,6 +29,7 @@
 		<File RelativePath="..\..\..\..\GitHub\compact_tension_specimen_fortran\compact\sph3\input1681.txt"/>
 		<File RelativePath=".\input21.txt"/>
 		<File RelativePath=".\input400.txt"/>
+		<File RelativePath=".\input400_Circle.txt"/>
 		<File RelativePath=".\input41.txt"/></Filter>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\base.f90"/>
