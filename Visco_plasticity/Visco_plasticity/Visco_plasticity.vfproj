@@ -27,6 +27,7 @@
 		<Filter Name="Header Files" Filter="fi;fd;h;inc"/>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		<File RelativePath="..\..\..\..\GitHub\compact_tension_specimen_fortran\compact\sph3\input1681.txt"/>
+		<File RelativePath=".\input1681_Circle.txt"/>
 		<File RelativePath=".\input21.txt"/>
 		<File RelativePath=".\input400.txt"/>
 		<File RelativePath=".\input400_Circle.txt"/>

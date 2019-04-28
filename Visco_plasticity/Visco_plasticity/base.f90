@@ -62,7 +62,7 @@
       
      end interface
     
-    open (unit=1, file="input400_Circle.txt")
+    open (unit=1, file="input1681_Circle.txt")
     open (unit=2, file="output_x.txt", action='write')
     open (unit=3, file="output_C.txt", action='write')
     
@@ -75,11 +75,11 @@
     pi=3.14159265359
     
     coutfr=1
-    S=1.25*0.6
+    S=1.25*0.6+(1.25-0.7)*(0.0150000005960464)
     m=rho_0*S/N
     
     k=136000.0
-    damping=300.0
+    damping=8000.0
     eta=1.0
     YieldStress=335.0d0
     E=9.0*k*mu/(3.0*k+mu)
