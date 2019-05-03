@@ -9,7 +9,7 @@ subroutine Compute_F(vol,x,x_old,nabla_W_0,N,F,table)
     real*8 :: nabla_W_0(2,N,N)
     real*8 :: F(2,2,N)
     real*8 ui,uj
-    real*8 :: table(N,60)
+    integer :: table(N,60)
     F=0
         do i=1,N
             do j=1,table(i,1)

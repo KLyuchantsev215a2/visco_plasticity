@@ -3,16 +3,16 @@
     integer step!counter for time steps
     integer sqn,fr,coutfr,flag
     real*8 :: rho_0, T, l,CFL!density, total calculation time ,the size of the side of the square, Courant number
-    real*8 :: S,m,h!body area, mass of a single particle , smoothing radius
+    real*8 :: S,m!body area, mass of a single particle , smoothing radius
     real*8 :: nu,mu,cs_0,E,k,eta,damping,YieldStress !material constants
-    real*8 :: dh!indent for calculating the derived kernel through finite differences
+    real*8 :: dh,max_h!indent for calculating the derived kernel through finite differences
     real*8 :: dt,time_calculated!time step, time during calculation
     real*8 :: pi
     real*8, allocatable :: x(:,:)
   
     real*8, allocatable :: xplot(:,:,:)
     real*8, allocatable :: x_init(:,:)
-    real*8, allocatable :: table(:,:)
+    integer, allocatable :: table(:,:)
     real*8, allocatable :: v(:,:)
    
     real*8, allocatable :: W(:,:)
@@ -29,6 +29,7 @@
     real*8, allocatable :: Ci(:,:,:)
     real*8, allocatable :: Ci_new(:,:,:)
     real*8, allocatable :: vol(:)
+    real*8, allocatable :: h(:)
     
     real*8, allocatable :: acc(:,:)
     real*8, allocatable :: x_0(:,:),x_n_1(:,:),x_n_2(:,:),x_n_1_2(:,:),x_n_3_2(:,:)
@@ -38,10 +39,11 @@
     integer, allocatable :: index_section(:)
     
      interface
-        function Compute_W (xi,xj,h)
+        function Compute_W (xi,xj,hi,hj)
             real*8 :: xi(2)
             real*8 :: xj(2)
-            real*8 :: h 
+            real*8 :: hi
+            real*8 :: hj
             real*8 :: Compute_W
         end function Compute_W
       
@@ -75,21 +77,22 @@
     pi=3.14159265359
     
     coutfr=1
-    S=1.25*0.6+(1.25-0.7)*(0.0150000005960464)
+    S=1.25*0.6+(1.25-0.7)*(0.0888888910412788)
     m=rho_0*S/N
     
     k=136000.0
-    damping=8000.0
+    damping=10000.0
     eta=1.0
     YieldStress=335.0d0
     E=9.0*k*mu/(3.0*k+mu)
 
     cs_0=sqrt((k+4.0/3.0*mu)/rho_0)
-    h=1.0*sqrt(m/rho_0)
+    
     dt=0.00001!CFL*h/(cs_0)
     fr=int(T/dt/50)
 
     allocate(vol(N))
+    allocate(h(N))
     allocate(x(2,N))
     allocate(x_init(2,N))
     allocate(xplot(2,N,200))
@@ -113,8 +116,11 @@
     allocate(Couchy(2,2,N))
     allocate(PK1(2,2,N))
    
+    h=1.0*sqrt(m/rho_0)
     vol=m/rho_0
        
+    max_h=h(1)
+    
     do i=1,N
         read (1, 1110) a,x(1,i),x(2,i)
     enddo
@@ -124,7 +130,7 @@
    !     read (1, 1110) a,v(1,i),v(2,i)
    !  enddo
     
-    call Create_Table(x,h+2*dh,table,N)
+    call Create_Table(x,max_h+2*dh,table,N)
     
    count_hole=0
    count_section=0
@@ -162,7 +168,7 @@
         
     enddo
     x_init=x
-    call plot_init(x,N,count_hole,count_section,index_section,index_hole)
+    !call plot_init(x,N,count_hole,count_section,index_section,index_hole)
    
    
    call Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W_0,dh,table)!tmp
@@ -216,9 +222,11 @@
         
     if((time_calculated>=0.66)*(flag==0)) then
         flag=1
-            do k1=1,count_section
-                write (3,1112) Couchy(1,1,index_section(k1)),x(1,index_section(k1))
-                write (2,1112) Couchy(2,2,index_section(k1)),x(1,index_section(k1))
+            do k1=1,count_section 
+                 if(x(2,index_section(k1))==0) then
+                    write (3,1112) Couchy(1,1,index_section(k1)),x(1,index_section(k1))
+                    write (2,1112) Couchy(2,2,index_section(k1)),x(1,index_section(k1))
+                endif
             enddo
         end if
     enddo
@@ -231,6 +239,7 @@
     
     
     deallocate(vol)
+    deallocate(h)
     deallocate(x)
     deallocate(x_init)
     deallocate(xplot)
@@ -268,30 +277,47 @@
     end program base
     
     
-    function Compute_W(xi,xj,h)
+    function Compute_W(xi,xj,hi,hj)
         real*8::xi(2)
         real*8::xj(2)
-        real*8::h
+        real*8::hi
+        real*8::hj
         
         real*8::r(2)
         real*8::q
         real*8::C
-        real*8::KER
-        KER=0
+        real*8::KERi
+        real*8::KERj
+        
+        KERi=0
+        KERj=0
+        
         r=xi-xj
-        q=sqrt(r(1)*r(1)+r(2)*r(2))/h
-        C=1.0/(3.14159265358979323846*h*h)
+        q=sqrt(r(1)*r(1)+r(2)*r(2))/hi
+        C=1.0/(3.14159265358979323846*hi*hi)
 
         if((q>=0)*(q<=1)) then
-               KER=C*(10.0 / 7.0)*(1.0-3.0/2.0*q*q*(1.0-q/2.0))
+               KERi=C*(10.0 / 7.0)*(1.0-3.0/2.0*q*q*(1.0-q/2.0))
         end if
     
         if ((q > 1) * (q <=2)) then
-            KER = C*(10.0 / 7.0)*(1.0/4.0)*(2.0 - q)*(2.0 - q)*(2.0 - q)
+            KERi = C*(10.0 / 7.0)*(1.0/4.0)*(2.0 - q)*(2.0 - q)*(2.0 - q)
         end if
         
+        q=sqrt(r(1)*r(1)+r(2)*r(2))/hj
+        C=1.0/(3.14159265358979323846*hj*hj)
+
+        if((q>=0)*(q<=1)) then
+               KERj=C*(10.0 / 7.0)*(1.0-3.0/2.0*q*q*(1.0-q/2.0))
+        end if
     
-    Compute_W=KER
+        if ((q > 1) * (q <=2)) then
+            KERj = C*(10.0 / 7.0)*(1.0/4.0)*(2.0 - q)*(2.0 - q)*(2.0 - q)
+        end if
+        
+        
+    
+    Compute_W=(KERi+KERj)/2.0d0
     end function Compute_W
     
     function det (M)

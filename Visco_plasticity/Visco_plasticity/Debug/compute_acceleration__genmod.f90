@@ -1,4 +1,4 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Sun Apr 28 22:44:23 2019
+        !COMPILER-GENERATED INTERFACE MODULE: Fri May 03 15:24:01 2019
         MODULE COMPUTE_ACCELERATION__genmod
           INTERFACE 
             SUBROUTINE COMPUTE_ACCELERATION(N,H,DH,RHO_0,MU,K,ETA,      &
@@ -8,7 +8,7 @@
               INTEGER(KIND=4) :: COUNT_SECTION
               INTEGER(KIND=4) :: COUNT_HOLE
               INTEGER(KIND=4) :: N
-              REAL(KIND=8) :: H
+              REAL(KIND=8) :: H(N)
               REAL(KIND=8) :: DH
               REAL(KIND=8) :: RHO_0
               REAL(KIND=8) :: MU
@@ -34,7 +34,7 @@
               INTEGER(KIND=4) :: INDEX_HOLE(COUNT_HOLE)
               REAL(KIND=8) :: CI(2,2,N)
               REAL(KIND=8) :: CI_NEW(3,3,N)
-              REAL(KIND=8) :: TABLE(N,60)
+              INTEGER(KIND=4) :: TABLE(N,60)
               REAL(KIND=8) :: FRICTION
             END SUBROUTINE COMPUTE_ACCELERATION
           END INTERFACE 

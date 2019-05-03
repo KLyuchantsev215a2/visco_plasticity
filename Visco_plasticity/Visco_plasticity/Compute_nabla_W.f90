@@ -5,7 +5,7 @@ subroutine Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W,dh,table)
         real*8::xper2(2,N)
         real*8::xper3(2,N)!tmp
         real*8::xper4(2,N)!tmp
-        real*8::h
+        real*8::h(N)
         real*8::retur
         real*8::vol(N)
         real*8::W(N,N)
@@ -15,7 +15,7 @@ subroutine Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W,dh,table)
         real*8::Wper4(N,N)!tmp
         real*8::nabla_W(2,N,N)
         real*8:: dh
-        real*8 :: table(N,30)
+        integer :: table(N,60)
         xper1=x
         xper2=x
         xper3=x!tmp
