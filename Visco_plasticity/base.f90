@@ -64,7 +64,7 @@
       
      end interface
     
-    open (unit=1, file="input1681_Circle.txt")
+    open (unit=1, file="3654.txt")
     open (unit=2, file="output_x.txt", action='write')
     open (unit=3, file="output_C.txt", action='write')
     
@@ -81,7 +81,7 @@
     m=rho_0*S/N
     
     k=136000.0
-    damping=3000.0
+    damping=10000.0
     eta=1.0
     YieldStress=335.0d0
     E=9.0*k*mu/(3.0*k+mu)
@@ -170,7 +170,7 @@
         end if
         
         
-        if ( (x(1,i)>0.7)*(x(2,i)<=0))     then
+        if ( (x(1,i)>0.7-2*h(2))*(x(2,i)<=0))     then
                 index_section(k2)=i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                 k2=k2+1
         end if
