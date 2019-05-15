@@ -1,8 +1,9 @@
-subroutine Create_Table(x,h,table,N)
+subroutine Create_Table(x,h,table,N,dh)
     integer :: N,i,j
     real*8 :: x(2,N)
     real*8:: h(N)
-
+    real*8:: dh
+    
     integer :: table(N,120)
     
     real*8::neighbour
@@ -19,7 +20,7 @@ subroutine Create_Table(x,h,table,N)
         
         xj=x(1:2,j)
         
-        neighbour=Compute_W(xi,xj,h(i),h(j)) 
+        neighbour=Compute_W(xi,xj,h(i)+2*dh,h(j)+2*dh) 
             
             if (neighbour>0) then
                 cout=cout+1

@@ -53,12 +53,12 @@ subroutine Compute_W_cor(x,xper,h,N,vol,W,table)
                 r=xi-xj
                 alpha=alpha+vol(table(i,j+1))*(1.0+betaij(1)*r(1)+betaij(2)*r(2))*Compute_W(xi,xj,h(i),h(table(i,j+1)))
             enddo
-            alpha=1.0/alpha
+            alpha=1.0d0/alpha
             
             do j=1,table(i,1)
                 xj=x(1:2,table(i,j+1))
                 r=xi-xj
-                W(i,table(i,j+1))=Compute_W(xi,xj,h(i),h(table(i,j+1)))*alpha*(1.0+betaij(1)*r(1)+betaij(2)*r(2))
+                W(i,table(i,j+1))=Compute_W(xi,xj,h(i),h(table(i,j+1)))*alpha*(1.0d0+betaij(1)*r(1)+betaij(2)*r(2))
             enddo
             
         enddo

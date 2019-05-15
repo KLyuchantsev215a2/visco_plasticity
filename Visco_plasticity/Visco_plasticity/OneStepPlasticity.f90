@@ -46,6 +46,7 @@ subroutine OneStepPlasticity(F,mu,k,eta,dt,Ci,N,Couchy,Ci_new,PK1,YieldStress)
     do i=1,N
         Ci3x3=0
         C=0
+        Couchy_tmp=0
         Fp=0
         
   

@@ -21,8 +21,8 @@ subroutine Compute_F(vol,x,x_old,nabla_W_0,N,F,table)
                     enddo
                 enddo
             enddo
-            F(1,1,i)= F(1,1,i)+1.0
-            F(2,2,i)= F(2,2,i)+1.0
+            F(1,1,i)= F(1,1,i)+1.0d0
+            F(2,2,i)= F(2,2,i)+1.0d0
         enddo
         
     return

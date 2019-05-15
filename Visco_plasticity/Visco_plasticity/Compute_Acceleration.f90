@@ -1,6 +1,7 @@
-subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x,x_old,v_old,nabla_W_0,nabla_W,W,Wper1,Wper2,Wper3,Wper4,acc,count_hole,count_section,index_section,index_hole,Ci,Ci_new,table,friction)
+subroutine Compute_Acceleration(cs,N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x,x_old,v_old,nabla_W_0,nabla_W,W,Wper1,Wper2,Wper3,Wper4,acc,count_hole,count_section,index_section,index_hole,Ci,Ci_new,table,friction)
     integer :: N,i,j,alpha,beta,k1,k2,count_hole,count_section
     
+    real*8 :: cs
     real*8 :: dh
     real*8 :: dt
     real*8 :: rho_0
@@ -27,6 +28,7 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     real*8 ::Wper3(N,N)
     real*8 ::Wper4(N,N)
     real*8 :: acc(2,N)
+     real*8 :: Pi_ij
     integer :: index_section(count_section)
     integer :: index_hole(count_hole)
     integer :: table(N,120)
@@ -43,13 +45,15 @@ subroutine Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x
     do i=1,N
         do j=1,table(i,1)
             do beta=1,2
-                do alpha=1,2
-                    acc(alpha,i)=acc(alpha,i)-(vol(table(i,j+1)))*PK1(alpha,beta,table(i,j+1))*nabla_W_0(beta,table(i,j+1),i)
+                do alpha=1,2  
+                    acc(alpha,i)=acc(alpha,i)-(vol(table(i,j+1)))*(PK1(alpha,beta,table(i,j+1)))*nabla_W_0(beta,table(i,j+1),i)
                 enddo
             enddo
         enddo
 
         do alpha=1,2
+           ! Pi_ij=Compute_Viscosity(h(i),h(table(i,j+1)),cs,rho_0,x(1:2,i),v_old(1:2,i),x(1:2,table(i,j+1)),v_old(1:2,table(i,j+1)))
+           ! acc(alpha,i)=acc(alpha,i)+Pi_ij*nabla_W_0(beta,table(i,j+1),i)*(vol(table(i,j+1)))
             acc(alpha,i)=acc(alpha,i)-damping*v_old(alpha,i)
             acc(alpha,i)=acc(alpha,i)/rho_0
         enddo

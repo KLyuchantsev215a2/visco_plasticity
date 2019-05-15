@@ -4,7 +4,7 @@
     integer sqn,fr,coutfr,flag
     real*8 :: rho_0, T, l,CFL!density, total calculation time ,the size of the side of the square, Courant number
     real*8 :: S,m!body area, mass of a single particle , smoothing radius
-    real*8 :: nu,mu,cs_0,E,k,eta,damping,YieldStress !material constants
+    real*8 :: nu,mu,cs,E,k,eta,damping,YieldStress !material constants
     real*8 :: dh,max_h!indent for calculating the derived kernel through finite differences
     real*8 :: dt,time_calculated!time step, time during calculation
     real*8 :: pi
@@ -39,6 +39,23 @@
     integer, allocatable :: index_section(:)
     
      interface
+     
+         function Compute_Viscosity(hi,hj,cs,rho_0,xi,vi,xj,vj)
+            real*8 ::hi
+            real*8 ::hj
+            real*8 :: hij
+            real*8 :: cs
+            real*8 :: rho_0
+            real*8 :: xi(1:2)
+            real*8 :: vi(1:2)
+            real*8 :: xj(1:2)
+            real*8 :: vj(1:2)
+    
+            real*8:: xij(1:2)
+            real*8 :: vij(1:2)
+            real*8 :: Compute_Viscosity
+         end function Compute_Viscosity
+         
         function Compute_W (xi,xj,hi,hj)
             real*8 :: xi(2)
             real*8 :: xj(2)
@@ -77,18 +94,18 @@
     pi=3.14159265359
     
     coutfr=1
-    S=1.25*0.6+(1.25-0.7)*(0.0888888910412788)
+    S=1.25d0*0.6d0
     m=rho_0*S/N
     
-    k=136000.0
-    damping=10000.0
-    eta=1.0
+    k=136000.0d0
+    damping=0.0d0
+    eta=0.1
     YieldStress=335.0d0
     E=9.0*k*mu/(3.0*k+mu)
 
-    cs_0=sqrt((k+4.0/3.0*mu)/rho_0)
+    cs=sqrt((k+4.0/3.0*mu)/rho_0)
     
-    dt=0.00001!CFL*h/(cs_0)
+    dt=0.00001d0!CFL*h/(cs_0)
     fr=int(T/dt/50)
 
     allocate(vol(N))
@@ -139,7 +156,7 @@
     
    v=0
     
-    call Create_Table(x,h,table,N)
+    call Create_Table(x,h,table,N,dh)
     
    count_hole=0
    count_section=0
@@ -151,7 +168,7 @@
             count_hole=count_hole+1
         end if
         
-        if ( (x(1,i)>0.7)*(x(2,i)<=0))     then
+        if ( (x(1,i)>=0.7-2.0d0*h(2))*(x(2,i)<=2.0d0*h(2)))     then
                 count_section=count_section+1
         end if
         
@@ -170,14 +187,14 @@
         end if
         
         
-        if ( (x(1,i)>0.7-2*h(2))*(x(2,i)<=0))     then
+        if ( (x(1,i)>=0.7-2.0d0*h(2))*(x(2,i)<=2.0d0*h(2)))     then
                 index_section(k2)=i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                 k2=k2+1
         end if
         
     enddo
     x_init=x
-    call plot_init(x,N,count_hole,count_section,index_section,index_hole)
+    !call plot_init(x,N,count_hole,count_section,index_section,index_hole)
    
    
    call Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W_0,dh,table)!tmp
@@ -189,7 +206,7 @@
     do step=1,int(T/dt)
         x_0=x
         v_0_0=v
-        call Compute_Acceleration(N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x_0,x_init,v,nabla_W_0,nabla_W,W,Wper1,Wper2,Wper3,Wper4,acc,count_hole,count_section,index_section,index_hole,Ci,Ci_new,table,YieldStress)
+        call Compute_Acceleration(cs,N,h,dh,rho_0,mu,k,eta,damping,vol,F,Couchy,PK1,x_0,x_init,v,nabla_W_0,nabla_W,W,Wper1,Wper2,Wper3,Wper4,acc,count_hole,count_section,index_section,index_hole,Ci,Ci_new,table,YieldStress)
         v=v+dt*acc
         x=x+dt*v
         
@@ -224,19 +241,21 @@
        
        
         if(step-int(step/fr)*fr==0) then
-             write (*,1112) Couchy(1,1,index_section(1)),x(1,index_section(1))
+             write (*,1112) Couchy(1,1,index_section(1)),time_calculated
             xplot(1:2,1:N,coutfr)=x
             coutfr=coutfr+1
         end if
         
     if((time_calculated>=0.66)*(flag==0)) then
         flag=1
+        
+        call  Plot_C(N,Couchy,x,index_section,count_section)
+        
             do k1=1,count_section 
-                 if(x(2,index_section(k1))==0) then
                     write (3,1112) Couchy(1,1,index_section(k1)),x(1,index_section(k1))
                     write (2,1112) Couchy(2,2,index_section(k1)),x(1,index_section(k1))
-                endif
             enddo
+            
         end if
     enddo
     
@@ -286,6 +305,48 @@
     end program base
     
     
+    function Compute_Viscosity(hi,hj,cs,rho_0,xi,vi,xj,vj)
+    
+
+    real*8 :: hi
+    real*8 :: hj
+    real*8 :: hij
+    real*8 :: cs
+    real*8 :: rho_0
+    
+    real*8 :: xi(1:2)
+    real*8 :: vi(1:2)
+
+    real*8 :: xj(1:2)
+    real*8 :: vj(1:2)
+    
+    real*8:: xij(1:2)
+    real*8 :: vij(1:2)
+    
+    real*8 :: alpha
+    real*8 :: betta
+    real*8 :: etta
+    real*8 :: fi_ij
+    
+    xij=xi-xj
+    vij=vi-vj
+     
+    hij=0.5d0*(hi+hj)
+    alpha=1.0d0
+    betta=2.0d0
+    etta=0.01d0
+    
+     if((vij(1)*xij(1)+vij(2)*xij(2))>=0) then
+        Compute_Viscosity=0
+        return
+     endif
+     
+    fi_ij=(hij*(vij(1)*xij(1)+vij(2)*xij(2))) / ((sqrt(xij(1)*xij(1)+xij(2)*xij(2))+etta*hij*hij));
+    
+    Compute_Viscosity=(-alpha*cs*fi_ij + betta*f_ij*fi_ij) / rho_0
+    
+    end function  Compute_Viscosity
+    
     function Compute_W(xi,xj,hi,hj)
         real*8::xi(2)
         real*8::xj(2)
@@ -298,30 +359,30 @@
         real*8::KERi
         real*8::KERj
         
-        KERi=0
-        KERj=0
+        KERi=0.0d0
+        KERj=0.0d0
         
         r=xi-xj
         q=sqrt(r(1)*r(1)+r(2)*r(2))/hi
         C=1.0/(3.14159265358979323846*hi*hi)
 
         if((q>=0)*(q<=1)) then
-               KERi=C*(10.0 / 7.0)*(1.0-3.0/2.0*q*q*(1.0-q/2.0))
+               KERi=C*(10.0d0 / 7.0d0)*(1.0d0-3.0d0/2.0d0*q*q*(1.0d0-q/2.0d0))
         end if
     
         if ((q > 1) * (q <=2)) then
-            KERi = C*(10.0 / 7.0)*(1.0/4.0)*(2.0 - q)*(2.0 - q)*(2.0 - q)
+            KERi = C*(10.0d0 / 7.0d0)*(1.0d0/4.0d0)*(2.0d0 - q)*(2.0d0 - q)*(2.0d0 - q)
         end if
         
         q=sqrt(r(1)*r(1)+r(2)*r(2))/hj
-        C=1.0/(3.14159265358979323846*hj*hj)
+        C=1.0d0/(3.14159265358979323846*hj*hj)
 
         if((q>=0)*(q<=1)) then
-               KERj=C*(10.0 / 7.0)*(1.0-3.0/2.0*q*q*(1.0-q/2.0))
+               KERj=C*(10.0d0 / 7.0d0)*(1.0d0-3.0d0/2.0d0*q*q*(1.0d0-q/2.0d0))
         end if
     
         if ((q > 1) * (q <=2)) then
-            KERj = C*(10.0 / 7.0)*(1.0/4.0)*(2.0 - q)*(2.0 - q)*(2.0 - q)
+            KERj = C*(10.0d0 / 7.0d0)*(1.0d0/4.0d0)*(2.0d0 - q)*(2.0d0 - q)*(2.0d0 - q)
         end if
         
         

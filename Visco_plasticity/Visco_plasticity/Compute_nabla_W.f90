@@ -31,8 +31,8 @@ subroutine Compute_nabla_W(x,h,vol,N,W,Wper1,Wper2,Wper3,Wper4,nabla_W,dh,table)
         call Compute_W_cor(x,xper3,h,N,vol,Wper3,table)!tmp
         call Compute_W_cor(x,xper4,h,N,vol,Wper4,table)!tmp
         
-         nabla_W(1,1:N,1:N)=(Wper1(1:N,1:N)-Wper3(1:N,1:N))/(2*dh)
-         nabla_W(2,1:N,1:N)=(Wper2(1:N,1:N)-Wper4(1:N,1:N))/(2*dh)
+         nabla_W(1,1:N,1:N)=(Wper1(1:N,1:N)-Wper3(1:N,1:N))/(2.0d0*dh)
+         nabla_W(2,1:N,1:N)=(Wper2(1:N,1:N)-Wper4(1:N,1:N))/(2.0d0*dh)
         !nabla_W(1,1:N,1:N)=(Wper1(1:N,1:N)-W(1:N,1:N))/dh 
         !nabla_W(2,1:N,1:N)=(Wper2(1:N,1:N)-W(1:N,1:N))/dh  
         
